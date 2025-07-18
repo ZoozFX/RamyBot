@@ -2,6 +2,6 @@ fastapi
 uvicorn
 jinja2
 python-multipart
-aiohttp==3.8.6
+aiohttp>=3.9.0  # إصدارات أحدث تدعم Python 3.13
 aiogram==2.25.1
 pydantic==1.10.13
