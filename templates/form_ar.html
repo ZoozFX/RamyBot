@@ -1,18 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <title>نموذج التسجيل</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <title>نموذج التسجيل</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <form method="post" action="/submit">
-        <h2>تسجيل الاشتراك</h2>
-        <input type="text" name="name" placeholder="الاسم الكامل" required>
-        <input type="email" name="email" placeholder="البريد الإلكتروني" required>
-        <input type="tel" name="phone" placeholder="رقم الهاتف" required pattern="[0-9+]+" title="أدخل أرقام فقط">
-        <input type="text" name="broker" placeholder="وسيط التداول" required>
-        <button type="submit">تسجيل</button>
-    </form>
+  <h2>✍️ سجل بياناتك:</h2>
+  <form id="form">
+    <label>الاسم:</label>
+    <input type="text" name="name" required><br><br>
+
+    <label>البريد الإلكتروني:</label>
+    <input type="email" name="email" required><br><br>
+
+    <label>رقم الهاتف:</label>
+    <input type="tel" name="phone" required pattern="^[\d\+\-\(\) ]+$" style="direction: rtl;"><br><br>
+
+    <label>شركة الوساطة:</label>
+    <input type="text" name="broker" required><br><br>
+
+    <input type="hidden" name="lang" value="ar">
+
+    <button type="submit">تسجيل ✅</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    document.getElementById("form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => { data[key] = value });
+      tg.sendData(JSON.stringify(data));
+    });
+  </script>
 </body>
 </html>
