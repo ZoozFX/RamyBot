@@ -1,35 +1,54 @@
-from aiogram import types, Dispatcher
-from aiogram.types import Message, WebAppData
+from aiogram import Router, F
+from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
+from aiogram.types import User as TelegramUser
+from aiogram.types import WebAppData
+from aiogram.filters import Command
+import json
 
-# دالة التعامل مع أمر /start
-async def start_command(message: types.Message):
-    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(
-        types.KeyboardButton(
-            text="📋 تسجيل",
-            web_app=types.WebAppInfo(url="https://ramybot.onrender.com/form_ar.html" if message.from_user.language_code == 'ar' else "https://ramybot.onrender.com/form_en.html")
+router = Router()
+
+@router.message(Command("start"))
+async def start_command(message: Message):
+    lang_code = message.from_user.language_code or "en"
+    if lang_code.startswith("ar"):
+        button = KeyboardButton(
+            text="📋 تسجيل البيانات",
+            web_app=WebAppInfo(url="https://ramybot.onrender.com/form_ar.html")
         )
-    )
-    await message.answer("اختر اللغة وابدأ التسجيل:", reply_markup=keyboard)
+        markup = ReplyKeyboardMarkup(keyboard=[[button]], resize_keyboard=True)
+        await message.answer("مرحبًا بك! اضغط على الزر بالأسفل لتسجيل بياناتك.", reply_markup=markup)
+    else:
+        button = KeyboardButton(
+            text="📋 Register Data",
+            web_app=WebAppInfo(url="https://ramybot.onrender.com/form_en.html")
+        )
+        markup = ReplyKeyboardMarkup(keyboard=[[button]], resize_keyboard=True)
+        await message.answer("Welcome! Click the button below to register your info.", reply_markup=markup)
 
-# دالة استقبال بيانات WebApp
-async def webapp_data_handler(message: Message):
+@router.message(F.web_app_data)
+async def on_webapp_data(message: Message):
     try:
-        data = message.web_app_data.data  # JSON string
-        print("📥 بيانات التسجيل:", data)
-        
-        # إرسال رسالة للمستخدم حسب اللغة
-        lang = message.from_user.language_code
+        data = json.loads(message.web_app_data.data)
+        name = data.get("name")
+        email = data.get("email")
+        phone = data.get("phone")
+        broker = data.get("broker")
+        lang = data.get("lang", "en")
+
+        # هنا يمكنك حفظ البيانات أو إرسالها لمكان آخر
+        print("✅ بيانات المستخدم:")
+        print(f"الاسم: {name}")
+        print(f"البريد: {email}")
+        print(f"الهاتف: {phone}")
+        print(f"الوسيط: {broker}")
+        print(f"اللغة: {lang}")
+
         if lang == "ar":
-            await message.answer("✅ تم التسجيل بنجاح، شكرًا لك!")
+            await message.answer("✅ تم التسجيل بنجاح")
         else:
-            await message.answer("✅ Registration successful, thank you!")
+            await message.answer("✅ Registration completed successfully")
 
     except Exception as e:
-        print("❌ حدث خطأ في استقبال البيانات:", e)
-        await message.answer("❌ حدث خطأ أثناء معالجة بيانات التسجيل.")
+        print("❌ خطأ في استقبال البيانات:", e)
+        await message.answer("حدث خطأ أثناء معالجة البيانات. حاول مرة أخرى.")
 
-# تسجيل الهاندلرز
-def register_user_handlers(dp: Dispatcher):
-    dp.register_message_handler(start_command, commands=["start"])
-    dp.register_message_handler(webapp_data_handler, content_types=types.ContentType.WEB_APP_DATA)
