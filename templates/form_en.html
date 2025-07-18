@@ -1,18 +1,42 @@
+
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <title>Registration Form</title>
-    <link rel="stylesheet" href="/static/style.css">
+  <meta charset="UTF-8">
+  <title>Registration Form</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <form method="post" action="/submit">
-        <h2>Register</h2>
-        <input type="text" name="name" placeholder="Full Name" required>
-        <input type="email" name="email" placeholder="Email Address" required>
-        <input type="tel" name="phone" placeholder="Phone Number" required pattern="[0-9+]+" title="Numbers only">
-        <input type="text" name="broker" placeholder="Your Broker" required>
-        <button type="submit">Submit</button>
-    </form>
+  <h2>✍️ Register your info:</h2>
+  <form id="form">
+    <label>Name:</label>
+    <input type="text" name="name" required><br><br>
+
+    <label>Email:</label>
+    <input type="email" name="email" required><br><br>
+
+    <label>Phone Number:</label>
+    <input type="tel" name="phone" required pattern="^[\d\+\-\(\) ]+$" style="direction: rtl;"><br><br>
+
+    <label>Broker:</label>
+    <input type="text" name="broker" required><br><br>
+
+    <input type="hidden" name="lang" value="en">
+
+    <button type="submit">Submit ✅</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.expand();
+
+    document.getElementById("form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = {};
+      formData.forEach((value, key) => { data[key] = value });
+      tg.sendData(JSON.stringify(data));
+    });
+  </script>
 </body>
 </html>
