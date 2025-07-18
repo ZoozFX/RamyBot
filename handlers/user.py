@@ -1,7 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton, CallbackQuery
-from aiogram.types import User as TelegramUser
-from aiogram.types import WebAppData
+from aiogram.types import Message, WebAppInfo, ReplyKeyboardMarkup, KeyboardButton
 from aiogram.filters import Command
 import json
 
@@ -13,14 +11,14 @@ async def start_command(message: Message):
     if lang_code.startswith("ar"):
         button = KeyboardButton(
             text="📋 تسجيل البيانات",
-            web_app=WebAppInfo(url="https://ramybot.onrender.com/form_ar.html")
+            web_app=WebAppInfo(url="https://frabjous-manatee-ae3536.netlify.app/form_ar.html")
         )
         markup = ReplyKeyboardMarkup(keyboard=[[button]], resize_keyboard=True)
         await message.answer("مرحبًا بك! اضغط على الزر بالأسفل لتسجيل بياناتك.", reply_markup=markup)
     else:
         button = KeyboardButton(
             text="📋 Register Data",
-            web_app=WebAppInfo(url="https://ramybot.onrender.com/form_en.html")
+            web_app=WebAppInfo(url="https://frabjous-manatee-ae3536.netlify.app/form_en.html")
         )
         markup = ReplyKeyboardMarkup(keyboard=[[button]], resize_keyboard=True)
         await message.answer("Welcome! Click the button below to register your info.", reply_markup=markup)
@@ -35,7 +33,7 @@ async def on_webapp_data(message: Message):
         broker = data.get("broker")
         lang = data.get("lang", "en")
 
-        # هنا يمكنك حفظ البيانات أو إرسالها لمكان آخر
+        # هنا يتم طباعة البيانات ويمكنك حفظها لاحقًا بأي طريقة
         print("✅ بيانات المستخدم:")
         print(f"الاسم: {name}")
         print(f"البريد: {email}")
@@ -51,4 +49,3 @@ async def on_webapp_data(message: Message):
     except Exception as e:
         print("❌ خطأ في استقبال البيانات:", e)
         await message.answer("حدث خطأ أثناء معالجة البيانات. حاول مرة أخرى.")
-
