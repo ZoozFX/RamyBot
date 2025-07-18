@@ -2,6 +2,6 @@ fastapi
 uvicorn
 jinja2
 python-multipart
-aiohttp
+aiohttp>=3.9.0  # ⚠️ استبدل السطر القديم بهذا
 aiogram==2.25.1
 pydantic==1.10.13
