@@ -1,27 +1,35 @@
-
-from aiogram import Router, F
+from aiogram import types, Dispatcher
 from aiogram.types import Message, WebAppData
 
-router = Router()
+# دالة التعامل مع أمر /start
+async def start_command(message: types.Message):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    keyboard.add(
+        types.KeyboardButton(
+            text="📋 تسجيل",
+            web_app=types.WebAppInfo(url="https://your-domain.com/form_ar.html" if message.from_user.language_code == 'ar' else "https://your-domain.com/form_en.html")
+        )
+    )
+    await message.answer("اختر اللغة وابدأ التسجيل:", reply_markup=keyboard)
 
-@router.message(F.web_app_data)
-async def handle_web_app_data(message: Message):
-    data = message.web_app_data.data
+# دالة استقبال بيانات WebApp
+async def webapp_data_handler(message: Message):
     try:
-        import json
-        user_data = json.loads(data)
-        name = user_data.get("name")
-        email = user_data.get("email")
-        phone = user_data.get("phone")
-        broker = user_data.get("broker")
-        lang = user_data.get("lang", "ar")
-
-        print(f"🟢 New user: {name}, {email}, {phone}, {broker}")
-
-        if lang == "en":
-            await message.answer("✅ Registration successful!\nWelcome aboard.")
+        data = message.web_app_data.data  # JSON string
+        print("📥 بيانات التسجيل:", data)
+        
+        # إرسال رسالة للمستخدم حسب اللغة
+        lang = message.from_user.language_code
+        if lang == "ar":
+            await message.answer("✅ تم التسجيل بنجاح، شكرًا لك!")
         else:
-            await message.answer("✅ تم تسجيلك بنجاح!\nمرحباً بك.")
+            await message.answer("✅ Registration successful, thank you!")
+
     except Exception as e:
-        await message.answer("❌ حدث خطأ أثناء معالجة البيانات.")
-        print("❌ Error parsing web_app_data:", e)
+        print("❌ حدث خطأ في استقبال البيانات:", e)
+        await message.answer("❌ حدث خطأ أثناء معالجة بيانات التسجيل.")
+
+# تسجيل الهاندلرز
+def register_user_handlers(dp: Dispatcher):
+    dp.register_message_handler(start_command, commands=["start"])
+    dp.register_message_handler(webapp_data_handler, content_types=types.ContentType.WEB_APP_DATA)
