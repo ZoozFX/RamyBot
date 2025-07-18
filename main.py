@@ -1,29 +1,16 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 app = FastAPI()
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
-class Registration(BaseModel):
-    name: str
-    email: str
-    phone: str
-    broker: str
+templates = Jinja2Templates(directory="templates")
 
-@app.get("/ar", response_class=HTMLResponse)
-async def serve_ar():
-    with open("html/form_ar.html", encoding="utf-8") as f:
-        return f.read()
+@app.get("/form_ar.html", response_class=HTMLResponse)
+async def form_ar(request: Request):
+    return templates.TemplateResponse("form_ar.html", {"request": request})
 
-@app.get("/en", response_class=HTMLResponse)
-async def serve_en():
-    with open("html/form_en.html", encoding="utf-8") as f:
-        return f.read()
-
-@app.post("/register")
-async def register(data: Registration):
-    print("📩 Data received:", data.dict())
-    # هنا يمكنك إرسال رسالة للبوت أو حفظها في قاعدة بيانات
-    return {"status": "ok"}
+@app.get("/form_en.html", response_class=HTMLResponse)
+async def form_en(request: Request):
+    return templates.TemplateResponse("form_en.html", {"request": request})
