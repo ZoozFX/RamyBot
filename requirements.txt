@@ -2,3 +2,5 @@ fastapi
 uvicorn
 jinja2
 python-multipart
+aiohttp
+aiogram==3.4.1
