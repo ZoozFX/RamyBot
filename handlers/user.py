@@ -7,7 +7,7 @@ async def start_command(message: types.Message):
     keyboard.add(
         types.KeyboardButton(
             text="📋 تسجيل",
-            web_app=types.WebAppInfo(url="https://your-domain.com/form_ar.html" if message.from_user.language_code == 'ar' else "https://your-domain.com/form_en.html")
+            web_app=types.WebAppInfo(url="https://ramybot.onrender.com/form_ar.html" if message.from_user.language_code == 'ar' else "https://ramybot.onrender.com/form_en.html")
         )
     )
     await message.answer("اختر اللغة وابدأ التسجيل:", reply_markup=keyboard)
